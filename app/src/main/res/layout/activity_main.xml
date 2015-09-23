@@ -1,0 +1,48 @@
+<android.support.design.widget.CoordinatorLayout
+    android:id="@+id/coordinatorLayout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v4.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/container_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <include
+                    android:id="@+id/include_toolbar"
+                    layout="@layout/toolbar"/>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/txt_response"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/container_toolbar"
+                android:layout_margin="@dimen/activity_vertical_margin"
+                android:singleLine="false"
+                android:text="@string/searchbar_hint"/>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:contentDescription="image"
+                android:src="@drawable/ic_android"/>
+
+        </RelativeLayout>
+
+    </android.support.v4.widget.DrawerLayout>
+
+</android.support.design.widget.CoordinatorLayout>

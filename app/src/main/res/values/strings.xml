@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">ILoveMarshmallow</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_search">Search</string>
+    <string name="action_share">Share</string>
+    <string name="drawer_open">Open</string>
+    <string name="drawer_close">Close</string>
+
+    <string name="title_section1">Section 1</string>
+    <string name="title_section2">Section 2</string>
+    <string name="title_section3">Section 3</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="search_hint">Type and Search</string>
+    <string name="search_result">Search Result!</string>
+
+    <string name="description">Description</string>
+    <string name="searchbar_hint">Please! use search bar to search any product</string>
+
+    <string name="marshmallow_url">http://marshmallow.zappos.com/</string>
+</resources>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.Toolbar
+    android:id="@+id/toolbar"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:local="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/colorPrimary"
+    android:minHeight="?attr/actionBarSize"
+    local:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+    local:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+
+    <!-- Below will add your text in the center of toolbar -->
+    <TextView
+        android:id="@+id/toolbar_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:paddingEnd="3dp"
+        android:paddingStart="3dp"
+        android:textColor="@android:color/white"
+        android:textSize="25sp"
+        android:textStyle="bold"/>
+
+</android.support.v7.widget.Toolbar>
