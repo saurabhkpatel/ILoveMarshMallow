@@ -10,11 +10,11 @@
     <string name="title_section2">Section 2</string>
     <string name="title_section3">Section 3</string>
 
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-
     <string name="search_hint">Type and Search</string>
     <string name="search_result">Search Result!</string>
+    <string name="search_data_notfound">No data found !!!</string>
+    <string name="search_product_data">Product Data:\n\n</string>
+
 
     <string name="description">Description</string>
     <string name="searchbar_hint">Please! use search bar to search any product</string>

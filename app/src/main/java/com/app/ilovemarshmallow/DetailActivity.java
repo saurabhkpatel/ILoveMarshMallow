@@ -25,6 +25,7 @@ import com.app.ilovemarshmallow.app.AppController;
 import com.app.ilovemarshmallow.bl.JsonManager;
 import com.app.ilovemarshmallow.bl.Product;
 import com.app.ilovemarshmallow.utils.Const;
+import org.sufficientlysecure.htmltextview.HtmlTextView;
 
 /**
  *
@@ -86,7 +87,8 @@ public class DetailActivity extends AppCompatActivity {
 
 		// Initialize image and description views
 		mThumbnail = (NetworkImageView) findViewById(R.id.thumbnail);
-		mTxtDescription = (TextView) findViewById(R.id.txt_description);
+		//mTxtDescription = (TextView) findViewById(R.id.txt_description);
+		HtmlTextView text = (HtmlTextView) findViewById(R.id.txt_description);
 
 		pDialog = new ProgressDialog(DetailActivity.this);
 		pDialog.setMessage("Loading...");

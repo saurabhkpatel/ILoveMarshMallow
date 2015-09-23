@@ -5,6 +5,13 @@ import android.support.v4.util.LruCache;
 
 import com.android.volley.toolbox.ImageLoader.ImageCache;
 
+/**
+ * LruBitmapCache.java - This class is required to handle image cache.
+ *
+ * @author Saurabh Patel
+ *         skpatel@syr.edu
+ * @version 1.0
+ */
 public class LruBitmapCache extends LruCache<String, Bitmap>implements ImageCache {
 	public static int getDefaultLruCacheSize() {
 		final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);

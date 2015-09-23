@@ -63,6 +63,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 		return mProductList.size();
 	}
 
+	// It is view holder class to initialize the row items for showing product items in list
 	public static class ProductViewHolder extends RecyclerView.ViewHolder {
 
 		protected NetworkImageView thumbNail;

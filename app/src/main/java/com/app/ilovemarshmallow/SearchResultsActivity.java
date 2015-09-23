@@ -1,5 +1,6 @@
 package com.app.ilovemarshmallow;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.app.ProgressDialog;
@@ -30,167 +31,205 @@ import com.app.ilovemarshmallow.bl.Product;
 import com.app.ilovemarshmallow.utils.Const;
 
 /**
- * 
+ *
  */
 public class SearchResultsActivity extends AppCompatActivity {
 
-	private static final String TAG = "ILoveMarshmallow-"
-			+ SearchResultsActivity.class.getSimpleName();
-	private ProgressDialog pDialog;
+    private static final String TAG = "ILoveMarshmallow-"
+            + SearchResultsActivity.class.getSimpleName();
+    private ProgressDialog pDialog;
 
-	private TextView mTxtMsgResponse;
-	private RecyclerView mRecyclerView;
+    private TextView mTxtMsgResponse;
+    private RecyclerView mRecyclerView;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_result);
+    private ArrayList<Product> mProductList = null;
+    private int mCurrentPage = 1;
+    private String mSearchQuery = "";
 
-		final TextView textView = (TextView) findViewById(R.id.toolbar_title);
-		textView.setText("Products");
+    private static final String PRODUCT_LIST = "productlist";
+    private static final String PAGE_NUMBER = "page_number";
+    private static final String SEARCH_QUERY = "search_query";
 
-		mTxtMsgResponse = (TextView) findViewById(R.id.activity_result_txt_response);
-		mRecyclerView = (RecyclerView) findViewById(R.id.rv_product);
 
-		handleIntent(getIntent());
-	}
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_result);
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+        final TextView textView = (TextView) findViewById(R.id.toolbar_title);
+        textView.setText("Products");
 
-		final MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.menu_main, menu);
+        mTxtMsgResponse = (TextView) findViewById(R.id.activity_result_txt_response);
+        mRecyclerView = (RecyclerView) findViewById(R.id.rv_product);
 
-		final SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
-		SearchView searchView = (SearchView) menu.findItem(R.id.action_search);
-		searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        // Usually you restore your state in onCreate(). It is possible to restore it in onRestoreInstanceState() as well,
+        // but not very common. (onRestoreInstanceState() is called after onStart(), whereas onCreate() is called before onStart().
+        if (savedInstanceState != null) {
+            getSavedData(savedInstanceState);
+        } else {
+            handleIntent(getIntent());
+        }
+    }
 
-		return true;
-	}
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
+        final MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
 
-		if (item.getItemId() == android.R.id.home) {
-			finish();
-		}
-		return super.onOptionsItemSelected(item);
-	}
+        final SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.action_search);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
-	@Override
-	protected void onNewIntent(Intent intent) {
-		super.onNewIntent(intent);
-		handleIntent(intent);
-	}
+        return true;
+    }
 
-	private void handleIntent(Intent intent) {
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
 
-		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-			String query = intent.getStringExtra(SearchManager.QUERY);
-			// use the query to search
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
-			Log.d(TAG, "-----------------------Query : " + query);
-			Toast.makeText(this, query, Toast.LENGTH_SHORT).show();
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        handleIntent(intent);
+    }
 
-			hideProgressDialog();
+    private void getSavedData(Bundle savedInstanceState) {
+        mSearchQuery = savedInstanceState.getString(SEARCH_QUERY);
+        mProductList = savedInstanceState.getParcelableArrayList(PRODUCT_LIST);
+        mCurrentPage = savedInstanceState.getInt(PAGE_NUMBER);
+    }
 
-			pDialog = new ProgressDialog(SearchResultsActivity.this);
-			pDialog.setMessage("Loading...");
-			pDialog.setCancelable(false);
-			makeStringReq(query);
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        // Usually you restore your state in onCreate(). It is possible to restore it in onRestoreInstanceState() as well,
+        // but not very common. (onRestoreInstanceState() is called after onStart(), whereas onCreate() is called before onStart().
+        super.onRestoreInstanceState(savedInstanceState);
+    }
 
-		}
-	}
+    @Override
+    public void onSaveInstanceState(Bundle savedState) {
+        // Save product list into the bundle
+        savedState.putParcelableArrayList(PRODUCT_LIST, mProductList);
+        savedState.putInt(PAGE_NUMBER, mCurrentPage);
+        savedState.putString(SEARCH_QUERY, mSearchQuery);
+        super.onSaveInstanceState(savedState);
+    }
 
-	@Override
-	protected void onPause() {
-		super.onPause();
-		hideProgressDialog();
-	}
+    private void handleIntent(Intent intent) {
 
-	private void showProgressDialog() {
-		if (pDialog != null && !pDialog.isShowing()) {
-			pDialog.show();
-		}
-	}
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            mSearchQuery = intent.getStringExtra(SearchManager.QUERY);
+            mCurrentPage = 1;
+            // use the query to search
+            Log.d(TAG, "Search Query : " + mSearchQuery);
+            hideProgressDialog();
+            pDialog = new ProgressDialog(SearchResultsActivity.this);
+            pDialog.setMessage("Loading...");
+            pDialog.setCancelable(false);
+            makeStringReq(mSearchQuery);
 
-	private void hideProgressDialog() {
-		if (pDialog != null && pDialog.isShowing()) {
-			pDialog.hide();
-			pDialog.dismiss();
-		}
-	}
+        }
+    }
 
-	/**
-	 * Making json object request
-	 */
-	private void makeStringReq(String str) {
-		showProgressDialog();
+    @Override
+    protected void onPause() {
+        super.onPause();
+        hideProgressDialog();
+    }
 
-		final StringRequest strReq = new StringRequest(Request.Method.GET,
-				Const.URL_STRING_REQ + str, new Response.Listener<String>() {
+    private void showProgressDialog() {
+        if (pDialog != null && !pDialog.isShowing()) {
+            pDialog.show();
+        }
+    }
 
-					@Override
-					public void onResponse(String response) {
-						Log.d(TAG, "Zappos Response : " + response);
+    private void hideProgressDialog() {
+        if (pDialog != null && pDialog.isShowing()) {
+            pDialog.hide();
+            pDialog.dismiss();
+        }
+    }
 
-						final JsonManager jsonManager = new JsonManager();
-						final List<Product> productList = jsonManager.getProducts(response);
+    private void setupAdapterView() {
+        final ProductAdapter productAdapter = new ProductAdapter(
+                SearchResultsActivity.this, mProductList);
+        if(mRecyclerView != null)
+        {
+            mRecyclerView.setAdapter(productAdapter);
+            final RecyclerView.LayoutManager manager = new GridLayoutManager(
+                    getParent(), 2);
+            mRecyclerView.setLayoutManager(manager);
+            mRecyclerView.addOnItemTouchListener(new RecyclerTouchListener(
+                    SearchResultsActivity.this, mRecyclerView,
+                    new RecyclerTouchListener.ClickListener() {
+                        @Override
+                        public void onClick(View view, int position) {
 
-						mTxtMsgResponse.setText("Product Data:\n\n");
+                            Product product = mProductList.get(position);
 
-						if (productList != null) {
+                            Bundle bundle = new Bundle();
+                            bundle.putParcelable(Product.PAR_KEY, product);
 
-							final ProductAdapter productAdapter = new ProductAdapter(
-									SearchResultsActivity.this, productList);
-							mRecyclerView.setAdapter(productAdapter);
-							final RecyclerView.LayoutManager manager = new GridLayoutManager(
-									getParent(), 2);
-							mRecyclerView.setLayoutManager(manager);
-							mRecyclerView.addOnItemTouchListener(new RecyclerTouchListener(
-									SearchResultsActivity.this, mRecyclerView,
-									new RecyclerTouchListener.ClickListener() {
-								@Override
-								public void onClick(View view, int position) {
+                            Intent intent = new Intent(SearchResultsActivity.this,
+                                    DetailActivity.class);
+                            intent.putExtras(bundle);
+                            startActivity(intent);
+                        }
 
-									Product product = productList.get(position);
+                        @Override
+                        public void onLongClick(View view, int position) {
 
-									Bundle bundle = new Bundle();
-									bundle.putParcelable(Product.PAR_KEY, product);
+                        }
+                    }));
+        }
+    }
 
-									Intent intent = new Intent(SearchResultsActivity.this,
-											DetailActivity.class);
-									intent.putExtras(bundle);
-									startActivity(intent);
-								}
 
-								@Override
-								public void onLongClick(View view, int position) {
+    /**
+     * Making request to search data.
+     */
+    private void makeStringReq(String str) {
+        showProgressDialog();
 
-								}
-							}));
+        final StringRequest strReq = new StringRequest(Request.Method.GET,
+                Const.URL_STRING_REQ + str, new Response.Listener<String>() {
 
-							mTxtMsgResponse.setVisibility(View.GONE);
-						}
-						else {
-							mTxtMsgResponse.setText("No data found!!!");
-							mRecyclerView.setVisibility(View.GONE);
-						}
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, "Response : " + response);
 
-						hideProgressDialog();
+                final JsonManager jsonManager = new JsonManager();
+                mProductList = jsonManager.getProducts(response);
 
-					}
-				}, new Response.ErrorListener() {
+                mTxtMsgResponse.setText(getString(R.string.search_product_data));
 
-					@Override
-					public void onErrorResponse(VolleyError error) {
-						VolleyLog.d(TAG, "Error: " + error.getMessage());
-						mTxtMsgResponse.setText(error.getMessage());
-						hideProgressDialog();
-					}
-				});
+                if (mProductList != null) {
+                    setupAdapterView();
+                    mTxtMsgResponse.setVisibility(View.GONE);
+                } else {
+                    mTxtMsgResponse.setText(getString(R.string.search_data_notfound));
+                    mRecyclerView.setVisibility(View.GONE);
+                }
+                hideProgressDialog();
 
-		// Adding request to request queue
-		AppController.getInstance().addToRequestQueue(strReq, Const.TAG_STRING_REQ);
-	}
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d(TAG, "Error: " + error.getMessage());
+                mTxtMsgResponse.setText(error.getMessage());
+                hideProgressDialog();
+            }
+        });
+
+        // Adding request to request queue
+        AppController.getInstance().addToRequestQueue(strReq, Const.TAG_STRING_REQ);
+    }
 }

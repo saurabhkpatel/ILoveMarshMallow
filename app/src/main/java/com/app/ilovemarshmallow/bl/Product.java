@@ -4,12 +4,18 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * 
+ * Product.java - This class holds information about product. Which includes all necessary parameters and attributes of product object.
+ * 				  Here we have used Parcelable because Parcel is a one type of serialization mechanism provided by Android.
+ * 				  In order to write an object to a Parcel, that object should implement the interface “Parcelable“.
+ * 				  Used parcelable instead of JAVA SERIALIZATION as it gives high performance.
+ *
+ * @author Saurabh Patel
+ *         skpatel@syr.edu
+ * @version 1.0
  */
 public class Product implements Parcelable {
 
-	// Key to pass object in another activity
-	public final static String PAR_KEY = "com.app.ilovemarshmallow.par";
+	public final static String PAR_KEY = "com.app.ilovemarshmallow.par"; 	// Key to pass object in another activity
 
 	private String brandName;
 	private String price;
