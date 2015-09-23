@@ -9,55 +9,72 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 import com.app.ilovemarshmallow.utils.LruBitmapCache;
 
+
+/**
+ * AppController.java - a simple application controller class for maintain singleton instances.
+ * these instances are used to maintain http request queues and image loader stuff.
+ *
+ * @author Saurabh Patel
+ *         skpatel@syr.edu
+ * @version 1.0
+ */
 public class AppController extends Application {
 
-	public static final String TAG = AppController.class.getSimpleName();
+    public static final String TAG = AppController.class.getSimpleName();
 
-	private RequestQueue mRequestQueue;
-	private ImageLoader mImageLoader;
+    private RequestQueue mRequestQueue;
+    private ImageLoader mImageLoader;
 
-	private static AppController mInstance;
+    private static AppController mInstance;
 
-	@Override
-	public void onCreate() {
-		super.onCreate();
-		mInstance = this;
-	}
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        mInstance = this;
+    }
 
-	public static synchronized AppController getInstance() {
-		return mInstance;
-	}
+    /**
+     * Retrieve the singleton instance of AppController class
+     *
+     * @return instance of AppController class.
+     */
+    public static synchronized AppController getInstance() {
+        return mInstance;
+    }
 
-	public RequestQueue getRequestQueue() {
-		if (mRequestQueue == null) {
-			mRequestQueue = Volley.newRequestQueue(getApplicationContext());
-		}
+    /**
+     * Instantiate the RequestQueue if it is not initialized,Volley provides a convenience method Volley.newRequestQueue that sets up a RequestQueue for you, using default values, and starts the queue
+     *
+     * @return return object of RequestQueue
+     */
+    public RequestQueue getRequestQueue() {
+        if (mRequestQueue == null) {
+            mRequestQueue = Volley.newRequestQueue(getApplicationContext());
+        }
 
-		return mRequestQueue;
-	}
+        return mRequestQueue;
+    }
 
-	public ImageLoader getImageLoader() {
-		getRequestQueue();
-		if (mImageLoader == null) {
-			mImageLoader = new ImageLoader(this.mRequestQueue, new LruBitmapCache());
-		}
-		return this.mImageLoader;
-	}
+    /**
+     * Instantiate the ImageLoader object if it is not initialized,
+     * ImageLoader object will be created which also takes care of LruBitmapCache.
+     *
+     * @return return instance of ImageLoader
+     */
+    public ImageLoader getImageLoader() {
+        getRequestQueue();
+        if (mImageLoader == null) {
+            mImageLoader = new ImageLoader(this.mRequestQueue, new LruBitmapCache());
+        }
+        return this.mImageLoader;
+    }
 
-	public <T> void addToRequestQueue(Request<T> req, String tag) {
-		// set the default tag if tag is empty
-		req.setTag(TextUtils.isEmpty(tag) ? TAG : tag);
-		getRequestQueue().add(req);
-	}
-
-	public <T> void addToRequestQueue(Request<T> req) {
-		req.setTag(TAG);
-		getRequestQueue().add(req);
-	}
-
-	public void cancelPendingRequests(Object tag) {
-		if (mRequestQueue != null) {
-			mRequestQueue.cancelAll(tag);
-		}
-	}
+    /**
+     * Add application requests for network data in request queue object.
+     */
+    public <T> void addToRequestQueue(Request<T> req, String tag) {
+        // set the default tag if tag is empty
+        req.setTag(TextUtils.isEmpty(tag) ? TAG : tag);
+        getRequestQueue().add(req);
+    }
 }

@@ -17,25 +17,27 @@ import com.app.ilovemarshmallow.R;
 import com.app.ilovemarshmallow.app.AppController;
 import com.app.ilovemarshmallow.bl.Product;
 
+
 /**
+ * ProductAdapter.java - This class provide a binding from an app-specific data set to views that are displayed within a RecyclerView.
+ *                       Here all products will be bind in recycler view which results application got from search item API.
  *
+ * @author Saurabh Patel
+ *         skpatel@syr.edu
+ * @version 1.0
  */
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
 
-	private List<Product> mProductList = Collections.emptyList();
+	private List<Product> mProductList = Collections.emptyList(); // products list
 	private LayoutInflater mInflater;
-	private Context mContext;
+	private Context mContext; // application context
 	private final ImageLoader mImageLoader = AppController.getInstance().getImageLoader();
 
+	// ProductAdapter class constructor
 	public ProductAdapter(Context context, List<Product> productList) {
 		mContext = context;
 		mInflater = LayoutInflater.from(mContext);
 		mProductList = productList;
-	}
-
-	public void delete(int position) {
-		mProductList.remove(position);
-		notifyItemRemoved(position);
 	}
 
 	@Override
