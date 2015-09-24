@@ -10,6 +10,7 @@
     <string name="title_section2">Section 2</string>
     <string name="title_section3">Section 3</string>
 
+    <string name="products">Products</string>
     <string name="search_hint">Type and Search</string>
     <string name="search_result">Search Result!</string>
     <string name="search_data_notfound">No data found !!!</string>

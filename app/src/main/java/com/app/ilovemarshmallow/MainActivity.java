@@ -1,6 +1,7 @@
 package com.app.ilovemarshmallow;
 
 import android.app.SearchManager;
+import android.app.SearchableInfo;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -46,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
         final SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setIconifiedByDefault(false);
+        searchView.requestFocus();
 
         return true;
     }
@@ -58,8 +61,6 @@ public class MainActivity extends AppCompatActivity {
 
         int id = item.getItemId();
         if (id == R.id.action_search) {
-            Toast.makeText(getApplicationContext(), "Search action is selected!",
-                    Toast.LENGTH_SHORT).show();
             return true;
         }
 
