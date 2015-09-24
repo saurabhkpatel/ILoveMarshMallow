@@ -15,20 +15,11 @@
             layout="@layout/toolbar"/>
     </LinearLayout>
 
-
-    <TextView
-        android:id="@+id/activity_result_txt_response"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/container_toolbar"
-        android:layout_margin="@dimen/activity_horizontal_margin"
-        android:text="@string/search_result"/>
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_product"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/activity_result_txt_response"
+        android:layout_below="@+id/container_toolbar"
         android:layout_marginBottom="@dimen/margin_small"
         android:layout_marginTop="@dimen/margin_small"/>
 

@@ -1,14 +1,12 @@
 package com.app.ilovemarshmallow;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
@@ -28,23 +26,34 @@ import com.app.ilovemarshmallow.adapter.ProductAdapter;
 import com.app.ilovemarshmallow.app.AppController;
 import com.app.ilovemarshmallow.bl.JsonManager;
 import com.app.ilovemarshmallow.bl.Product;
+import com.app.ilovemarshmallow.listeners.EndlessRecyclerOnScrollListener;
 import com.app.ilovemarshmallow.utils.Const;
 
+import java.util.ArrayList;
+
 /**
+ * SearchResultsActivity.java - This activity class shows results after search query applied. User will enter text in search bar
+ *                       to search any products.
  *
+ * @author Saurabh Patel
+ *         skpatel@syr.edu
+ * @version 1.0
  */
 public class SearchResultsActivity extends AppCompatActivity {
 
     private static final String TAG = "ILoveMarshmallow-"
             + SearchResultsActivity.class.getSimpleName();
-    private ProgressDialog pDialog;
+    //private ProgressDialog pDialog;
 
-    private TextView mTxtMsgResponse;
     private RecyclerView mRecyclerView;
+    private ProductAdapter mProductAdapter;
+    private GridLayoutManager mGridLayoutManager;
+
 
     private ArrayList<Product> mProductList = null;
     private int mCurrentPage = 1;
     private String mSearchQuery = "";
+    private int mSpanCount = 2;
 
     private static final String PRODUCT_LIST = "productlist";
     private static final String PAGE_NUMBER = "page_number";
@@ -59,13 +68,14 @@ public class SearchResultsActivity extends AppCompatActivity {
         final TextView textView = (TextView) findViewById(R.id.toolbar_title);
         textView.setText("Products");
 
-        mTxtMsgResponse = (TextView) findViewById(R.id.activity_result_txt_response);
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_product);
 
         // Usually you restore your state in onCreate(). It is possible to restore it in onRestoreInstanceState() as well,
         // but not very common. (onRestoreInstanceState() is called after onStart(), whereas onCreate() is called before onStart().
         if (savedInstanceState != null) {
             getSavedData(savedInstanceState);
+            setupRecyclerView();
+            setUpProductAdapter();
         } else {
             handleIntent(getIntent());
         }
@@ -99,6 +109,9 @@ public class SearchResultsActivity extends AppCompatActivity {
         handleIntent(intent);
     }
 
+    /**
+     * get saved data from bundle, when activity orientation change.
+     */
     private void getSavedData(Bundle savedInstanceState) {
         mSearchQuery = savedInstanceState.getString(SEARCH_QUERY);
         mProductList = savedInstanceState.getParcelableArrayList(PRODUCT_LIST);
@@ -121,6 +134,9 @@ public class SearchResultsActivity extends AppCompatActivity {
         super.onSaveInstanceState(savedState);
     }
 
+    /**
+     * Handle intent when this activity call from parent activity.
+     */
     private void handleIntent(Intent intent) {
 
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
@@ -128,11 +144,11 @@ public class SearchResultsActivity extends AppCompatActivity {
             mCurrentPage = 1;
             // use the query to search
             Log.d(TAG, "Search Query : " + mSearchQuery);
-            hideProgressDialog();
-            pDialog = new ProgressDialog(SearchResultsActivity.this);
-            pDialog.setMessage("Loading...");
-            pDialog.setCancelable(false);
-            makeStringReq(mSearchQuery);
+            //hideProgressDialog();
+            //pDialog = new ProgressDialog(SearchResultsActivity.this);
+            //pDialog.setMessage("Loading...");
+            //pDialog.setCancelable(false);
+            makeStringReq(mSearchQuery,mCurrentPage,true);
 
         }
     }
@@ -140,10 +156,16 @@ public class SearchResultsActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        hideProgressDialog();
+        //hideProgressDialog();
     }
 
-    private void showProgressDialog() {
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        mSpanCount = (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE ? 3 : 2);
+        super.onConfigurationChanged(newConfig);
+    }
+
+ /*   private void showProgressDialog() {
         if (pDialog != null && !pDialog.isShowing()) {
             pDialog.show();
         }
@@ -154,17 +176,27 @@ public class SearchResultsActivity extends AppCompatActivity {
             pDialog.hide();
             pDialog.dismiss();
         }
+    }*/
+
+    /**
+     * setup product adapter to bind data with recyclerview
+     */
+    private void setUpProductAdapter()
+    {
+        mProductAdapter = new ProductAdapter(
+                SearchResultsActivity.this, mProductList);
+        mRecyclerView.setAdapter(mProductAdapter);
     }
 
-    private void setupAdapterView() {
-        final ProductAdapter productAdapter = new ProductAdapter(
-                SearchResultsActivity.this, mProductList);
-        if(mRecyclerView != null)
-        {
-            mRecyclerView.setAdapter(productAdapter);
-            final RecyclerView.LayoutManager manager = new GridLayoutManager(
-                    getParent(), 2);
-            mRecyclerView.setLayoutManager(manager);
+    /**
+     * setup recyclerview with attributes and click listener.
+     */
+    private void setupRecyclerView() {
+        if (mRecyclerView != null) {
+            Log.d(TAG,"span count " + mSpanCount);
+            mGridLayoutManager = new GridLayoutManager(
+                    getParent(), mSpanCount);
+            mRecyclerView.setLayoutManager(mGridLayoutManager);
             mRecyclerView.addOnItemTouchListener(new RecyclerTouchListener(
                     SearchResultsActivity.this, mRecyclerView,
                     new RecyclerTouchListener.ClickListener() {
@@ -187,18 +219,19 @@ public class SearchResultsActivity extends AppCompatActivity {
 
                         }
                     }));
+           // mRecyclerView.addOnScrollListener(new EndlessScrollListener(mGridLayoutManager));
         }
     }
 
 
     /**
-     * Making request to search data.
+     * Making API request to get search data.
      */
-    private void makeStringReq(String str) {
-        showProgressDialog();
+    private void makeStringReq(String str, int page,final boolean firstTime) {
+        //showProgressDialog();
 
         final StringRequest strReq = new StringRequest(Request.Method.GET,
-                Const.URL_STRING_REQ + str, new Response.Listener<String>() {
+                Const.URL_STRING_REQ + str + Const.URL_STRING_REQ_PAGEPARAMETER + String.valueOf(page), new Response.Listener<String>() {
 
             @Override
             public void onResponse(String response) {
@@ -207,29 +240,58 @@ public class SearchResultsActivity extends AppCompatActivity {
                 final JsonManager jsonManager = new JsonManager();
                 mProductList = jsonManager.getProducts(response);
 
-                mTxtMsgResponse.setText(getString(R.string.search_product_data));
 
                 if (mProductList != null) {
-                    setupAdapterView();
-                    mTxtMsgResponse.setVisibility(View.GONE);
+                    if(firstTime)
+                    {
+                        setupRecyclerView();
+                        setUpProductAdapter();
+                    }
+                    else
+                    {
+                        // get new products list and add in existing list
+                        mProductList.addAll(jsonManager.getProducts(response));
+                        mProductAdapter.notifyDataSetChanged();
+                    }
                 } else {
-                    mTxtMsgResponse.setText(getString(R.string.search_data_notfound));
+                    Toast.makeText(getApplicationContext(), getString(R.string.search_data_notfound), Toast.LENGTH_SHORT).show();
                     mRecyclerView.setVisibility(View.GONE);
                 }
-                hideProgressDialog();
+                //hideProgressDialog();
 
             }
         }, new Response.ErrorListener() {
 
             @Override
             public void onErrorResponse(VolleyError error) {
+
+                if (mCurrentPage == 1) {
+                    Toast.makeText(getApplicationContext(), "No search results found", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "There are no more items to load", Toast.LENGTH_SHORT).show();
+                }
+
                 VolleyLog.d(TAG, "Error: " + error.getMessage());
-                mTxtMsgResponse.setText(error.getMessage());
-                hideProgressDialog();
+               // hideProgressDialog();
             }
         });
 
         // Adding request to request queue
         AppController.getInstance().addToRequestQueue(strReq, Const.TAG_STRING_REQ);
+    }
+
+    private class EndlessScrollListener extends EndlessRecyclerOnScrollListener {
+        // Extension of ScrollListener that notifies when user is at the end of the recyclerview
+        public EndlessScrollListener(LinearLayoutManager linearLayoutManager) {
+
+            super(linearLayoutManager);
+        }
+
+        @Override
+        public void onLoadMore(final int current_page) {
+            mCurrentPage = current_page;
+            makeStringReq(mSearchQuery,current_page,false);
+
+        }
     }
 }
