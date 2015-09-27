@@ -2,7 +2,7 @@
 This is android application challenge.
 
 
-**Application Description**
+###**Application Description**
 
 * Accepts a search query from the user and makes a request to the Zappos using API.
 * Parse Json response and get the results of the search and displays them RecyclerView.
