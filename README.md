@@ -1,5 +1,6 @@
 # ILoveMarshMallow
 This is android application challenge.
+You can download a working signed apk of this app [here](https://github.com/saurabhkpatel/ILoveMarshMallow/blob/master/release_apk/ILoveMarshMallow.apk?raw=true)
 
 
 ###**Application Description**
