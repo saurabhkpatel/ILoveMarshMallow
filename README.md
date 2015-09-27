@@ -25,7 +25,8 @@ https://zappos.amazon.com/mobileapi/v1/product/asin/?
 Example:
 https://zappos.amazon.com/mobileapi/v1/product/asin/B00LLS8QV0
 
-** Libraries **
+**Libraries**
+
 * Material Desgin Components: Android Design Support Library
                             CardView
                             RecyclerView
@@ -34,7 +35,7 @@ https://zappos.amazon.com/mobileapi/v1/product/asin/B00LLS8QV0
 * To Show HTML Text : [Html Textview](https://github.com/sufficientlysecure/html-textview)
 
 
-** Screenshots **
+**Screenshots**
 
 
 
