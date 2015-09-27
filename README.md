@@ -37,5 +37,9 @@ https://zappos.amazon.com/mobileapi/v1/product/asin/B00LLS8QV0
 
 **Screenshots**
 
-![Screen Shot 1](https://github.com/saurabhkpatel/ILoveMarshMallow/blob/master/screenshots/MainActivity.png)
+<img src=https://github.com/saurabhkpatel/ILoveMarshMallow/blob/master/screenshots/MainActivity.png width="250"/>
+<img src=https://github.com/saurabhkpatel/ILoveMarshMallow/blob/master/screenshots/SearchResults.png width="250"/>
+<img src=https://github.com/saurabhkpatel/ILoveMarshMallow/blob/master/screenshots/NewSearch.png width="250"/>
+<img src=https://github.com/saurabhkpatel/ILoveMarshMallow/blob/master/screenshots/Details.png width="250"/>
+<img src=https://github.com/saurabhkpatel/ILoveMarshMallow/blob/master/screenshots/Share.png width="250"/>
 
