@@ -1,14 +1,13 @@
 package com.app.ilovemarshmallow;
 
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -17,7 +16,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -29,14 +27,14 @@ import com.app.ilovemarshmallow.adapter.ProductAdapter;
 import com.app.ilovemarshmallow.app.AppController;
 import com.app.ilovemarshmallow.bl.JsonManager;
 import com.app.ilovemarshmallow.bl.Product;
-import com.app.ilovemarshmallow.listeners.EndlessRecyclerOnScrollListener;
 import com.app.ilovemarshmallow.utils.Const;
+import com.app.ilovemarshmallow.utils.Utils;
 
 import java.util.ArrayList;
 
 /**
  * SearchResultsActivity.java - This activity class shows results after search query applied. User will enter text in search bar
- *                       to search any products.
+ * to search any products.
  *
  * @author Saurabh Patel
  *         skpatel@syr.edu
@@ -46,11 +44,10 @@ public class SearchResultsActivity extends AppCompatActivity {
 
     private static final String TAG = "ILoveMarshmallow-"
             + SearchResultsActivity.class.getSimpleName();
-    //private ProgressDialog pDialog;
+    private ProgressDialog pDialog;
 
     private RecyclerView mRecyclerView;
     private ProductAdapter mProductAdapter;
-    private GridLayoutManager mGridLayoutManager;
 
 
     private ArrayList<Product> mProductList = null;
@@ -71,8 +68,14 @@ public class SearchResultsActivity extends AppCompatActivity {
 
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_product);
 
+
         // Usually you restore your state in onCreate(). It is possible to restore it in onRestoreInstanceState() as well,
         // but not very common. (onRestoreInstanceState() is called after onStart(), whereas onCreate() is called before onStart().
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            mSpanCount = 3;
+        } else {
+            mSpanCount = 2;
+        }
         if (savedInstanceState != null) {
             getSavedData(savedInstanceState);
             setupRecyclerView();
@@ -85,8 +88,7 @@ public class SearchResultsActivity extends AppCompatActivity {
     /**
      * setup tool bar.
      */
-    private void setupToolbar()
-    {
+    private void setupToolbar() {
         final Toolbar toolbar = (Toolbar) findViewById(R.id.include_toolbar);
         setSupportActionBar(toolbar);
         assert getSupportActionBar() != null;
@@ -161,11 +163,18 @@ public class SearchResultsActivity extends AppCompatActivity {
             mCurrentPage = 1;
             // use the query to search
             Log.d(TAG, "Search Query : " + mSearchQuery);
-            //hideProgressDialog();
-            //pDialog = new ProgressDialog(SearchResultsActivity.this);
-            //pDialog.setMessage("Loading...");
-            //pDialog.setCancelable(false);
-            makeStringReq(mSearchQuery,mCurrentPage,true);
+            hideProgressDialog();
+
+            // Check internet connection before we make request to API.
+            if (Utils.isConnectingToInternet(SearchResultsActivity.this)) {
+                pDialog = new ProgressDialog(SearchResultsActivity.this);
+                pDialog.setMessage("Loading...");
+                pDialog.setCancelable(false);
+                makeStringReq(mSearchQuery, mCurrentPage, true);
+            } else {
+                Toast.makeText(SearchResultsActivity.this, getString(R.string.please_check_internet), Toast.LENGTH_SHORT).show();
+            }
+
 
         }
     }
@@ -173,36 +182,38 @@ public class SearchResultsActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        //hideProgressDialog();
+        hideProgressDialog();
     }
 
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        mSpanCount = (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE ? 3 : 2);
-        super.onConfigurationChanged(newConfig);
-    }
-
- /*   private void showProgressDialog() {
+    /**
+     * show progress bar when network operations starts in background.
+     */
+    private void showProgressDialog() {
         if (pDialog != null && !pDialog.isShowing()) {
             pDialog.show();
         }
     }
 
+    /**
+     * Hide Progress bar when network operation done.
+     */
     private void hideProgressDialog() {
         if (pDialog != null && pDialog.isShowing()) {
             pDialog.hide();
             pDialog.dismiss();
         }
-    }*/
+    }
 
     /**
      * setup product adapter to bind data with recyclerview
      */
-    private void setUpProductAdapter()
-    {
-        mProductAdapter = new ProductAdapter(
-                SearchResultsActivity.this, mProductList);
-        mRecyclerView.setAdapter(mProductAdapter);
+    private void setUpProductAdapter() {
+        if(mProductList != null)
+        {
+            mProductAdapter = new ProductAdapter(
+                    SearchResultsActivity.this, mProductList);
+            mRecyclerView.setAdapter(mProductAdapter);
+        }
     }
 
     /**
@@ -210,8 +221,8 @@ public class SearchResultsActivity extends AppCompatActivity {
      */
     private void setupRecyclerView() {
         if (mRecyclerView != null) {
-            Log.d(TAG,"span count " + mSpanCount);
-            mGridLayoutManager = new GridLayoutManager(
+            Log.d(TAG, "span count " + mSpanCount);
+            GridLayoutManager mGridLayoutManager = new GridLayoutManager(
                     getParent(), mSpanCount);
             mRecyclerView.setLayoutManager(mGridLayoutManager);
             mRecyclerView.addOnItemTouchListener(new RecyclerTouchListener(
@@ -236,7 +247,6 @@ public class SearchResultsActivity extends AppCompatActivity {
 
                         }
                     }));
-           // mRecyclerView.addOnScrollListener(new EndlessScrollListener(mGridLayoutManager));
         }
     }
 
@@ -244,8 +254,8 @@ public class SearchResultsActivity extends AppCompatActivity {
     /**
      * Making API request to get search data.
      */
-    private void makeStringReq(String str, int page,final boolean firstTime) {
-        //showProgressDialog();
+    private void makeStringReq(String str, int page, final boolean firstTime) {
+        showProgressDialog();
 
         final StringRequest strReq = new StringRequest(Request.Method.GET,
                 Const.URL_STRING_REQ + str + Const.URL_STRING_REQ_PAGEPARAMETER + String.valueOf(page), new Response.Listener<String>() {
@@ -259,13 +269,10 @@ public class SearchResultsActivity extends AppCompatActivity {
 
 
                 if (mProductList != null) {
-                    if(firstTime)
-                    {
+                    if (firstTime) {
                         setupRecyclerView();
                         setUpProductAdapter();
-                    }
-                    else
-                    {
+                    } else {
                         // get new products list and add in existing list
                         mProductList.addAll(jsonManager.getProducts(response));
                         mProductAdapter.notifyDataSetChanged();
@@ -274,7 +281,7 @@ public class SearchResultsActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), getString(R.string.search_data_notfound), Toast.LENGTH_SHORT).show();
                     mRecyclerView.setVisibility(View.GONE);
                 }
-                //hideProgressDialog();
+                hideProgressDialog();
 
             }
         }, new Response.ErrorListener() {
@@ -289,26 +296,11 @@ public class SearchResultsActivity extends AppCompatActivity {
                 }
 
                 VolleyLog.d(TAG, "Error: " + error.getMessage());
-               // hideProgressDialog();
+                hideProgressDialog();
             }
         });
 
         // Adding request to request queue
         AppController.getInstance().addToRequestQueue(strReq, Const.TAG_STRING_REQ);
-    }
-
-    private class EndlessScrollListener extends EndlessRecyclerOnScrollListener {
-        // Extension of ScrollListener that notifies when user is at the end of the recyclerview
-        public EndlessScrollListener(LinearLayoutManager linearLayoutManager) {
-
-            super(linearLayoutManager);
-        }
-
-        @Override
-        public void onLoadMore(final int current_page) {
-            mCurrentPage = current_page;
-            makeStringReq(mSearchQuery,current_page,false);
-
-        }
     }
 }

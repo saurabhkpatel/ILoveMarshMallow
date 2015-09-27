@@ -6,14 +6,13 @@
  **************************************************************************************/
 package com.app.ilovemarshmallow.bl;
 
-import java.util.ArrayList;
-import java.util.List;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.util.Log;
+import java.util.ArrayList;
 
 /**
  * JsonManager.java - This class is responsible to parse json response and return product details.

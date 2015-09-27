@@ -29,22 +29,19 @@ import com.app.ilovemarshmallow.bl.Product;
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
 
 	private List<Product> mProductList = Collections.emptyList(); // products list
-	private LayoutInflater mInflater;
-	private Context mContext; // application context
+	private final LayoutInflater mInflater;
 	private final ImageLoader mImageLoader = AppController.getInstance().getImageLoader();
 
 	// ProductAdapter class constructor
 	public ProductAdapter(Context context, List<Product> productList) {
-		mContext = context;
-		mInflater = LayoutInflater.from(mContext);
+		mInflater = LayoutInflater.from(context);
 		mProductList = productList;
 	}
 
 	@Override
 	public ProductViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 		final View view = mInflater.inflate(R.layout.row_product, parent, false);
-		final ProductViewHolder productViewHolder = new ProductViewHolder(view);
-		return productViewHolder;
+		return new ProductViewHolder(view);
 	}
 
 	@Override
@@ -66,11 +63,11 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 	// It is view holder class to initialize the row items for showing product items in list
 	public static class ProductViewHolder extends RecyclerView.ViewHolder {
 
-		protected NetworkImageView thumbNail;
-		protected TextView txtBrandName;
-		protected TextView txtPrice;
-		protected TextView txtProductName;
-		protected RatingBar ratingBar;
+		final NetworkImageView thumbNail;
+		final TextView txtBrandName;
+		final TextView txtPrice;
+		final TextView txtProductName;
+		final RatingBar ratingBar;
 
 		public ProductViewHolder(View itemView) {
 			super(itemView);

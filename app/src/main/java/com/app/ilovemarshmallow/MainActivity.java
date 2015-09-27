@@ -1,7 +1,6 @@
 package com.app.ilovemarshmallow;
 
 import android.app.SearchManager;
-import android.app.SearchableInfo;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -10,7 +9,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 
 /**
@@ -21,8 +19,6 @@ import android.widget.Toast;
  * @version 1.0
  */
 public class MainActivity extends AppCompatActivity {
-
-    private static final String TAG = "ILoveMarshmallow-" + MainActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

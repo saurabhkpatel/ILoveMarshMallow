@@ -20,7 +20,7 @@ import com.app.ilovemarshmallow.utils.LruBitmapCache;
  */
 public class AppController extends Application {
 
-    public static final String TAG = AppController.class.getSimpleName();
+    private static final String TAG = AppController.class.getSimpleName();
 
     private RequestQueue mRequestQueue;
     private ImageLoader mImageLoader;
@@ -47,7 +47,7 @@ public class AppController extends Application {
      *
      * @return return object of RequestQueue
      */
-    public RequestQueue getRequestQueue() {
+    private RequestQueue getRequestQueue() {
         if (mRequestQueue == null) {
             mRequestQueue = Volley.newRequestQueue(getApplicationContext());
         }

@@ -1,5 +1,6 @@
 package com.app.ilovemarshmallow;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -40,6 +41,7 @@ import org.sufficientlysecure.htmltextview.HtmlTextView;
 public class DetailActivity extends AppCompatActivity {
 
 	private static final String TAG = "ILoveMarshmallow-" + DetailActivity.class.getSimpleName();
+	private ProgressDialog pDialog;
 
 	private String mShareAsin;
 
@@ -49,7 +51,7 @@ public class DetailActivity extends AppCompatActivity {
 	private NetworkImageView mThumbnail;
 	private HtmlTextView mTxtDescription;
 
-	private ImageLoader mImageLoader = AppController.getInstance().getImageLoader();
+	private final ImageLoader mImageLoader = AppController.getInstance().getImageLoader();
 
 	// used to store data when configuration changes.
 	private static final String PRODUCT_IMAGE = "image";
@@ -81,6 +83,7 @@ public class DetailActivity extends AppCompatActivity {
 		if (getIntent().getAction() == Intent.ACTION_VIEW) {
 			// share intent condition.
 			if (mProduct == null) {
+				mProduct = new Product();
 				final Uri data = getIntent().getData();
 				if (data != null) {
 					mShareAsin = data.getPathSegments().get(0);
@@ -104,7 +107,14 @@ public class DetailActivity extends AppCompatActivity {
 			final TextView txtPrice = (TextView) findViewById(R.id.txt_price);
 			txtPrice.setText(mProduct.getPrice());
 			mShareAsin = mProduct.getAsin();
+
+			pDialog = new ProgressDialog(DetailActivity.this);
+			pDialog.setMessage("Loading...");
+			pDialog.setCancelable(false);
+
 			makeStringReq(mShareAsin);
+
+
 
 		}
 	}
@@ -134,6 +144,8 @@ public class DetailActivity extends AppCompatActivity {
 		// Set Title to this Activity
 		mTxtTitle.setText(mProduct.getBrandName());
 		mTxtProductName.setText(mProduct.getProductName());
+		if(mTxtDescription == null)
+			mTxtDescription = (HtmlTextView) findViewById(R.id.txt_description);
 		mTxtDescription.setHtmlFromString(mProduct.getDescription(), new HtmlTextView.LocalImageGetter());
 		final TextView txtPrice = (TextView) findViewById(R.id.txt_price);
 		mThumbnail.setImageUrl(mProduct.getDefaultProductUrl(), mImageLoader);
@@ -176,17 +188,38 @@ public class DetailActivity extends AppCompatActivity {
 	}
 
 
+
+	/**
+	 * show progress bar when network operations starts in background.
+	 */
+	private void showProgressDialog() {
+		if (pDialog != null && !pDialog.isShowing()) {
+			pDialog.show();
+		}
+	}
+
+
+	/**
+	 * Hide Progress bar when network operation done.
+	 */
+	private void hideProgressDialog() {
+		if (pDialog != null && pDialog.isShowing()) {
+			pDialog.hide();
+			pDialog.dismiss();
+		}
+	}
+
 	/**
 	 * make API request using Volley library.
 	 */
-	public void makeStringReq(String s) {
-
+	private void makeStringReq(String s) {
+		showProgressDialog();
 		final StringRequest request = new StringRequest(Request.Method.GET,
 				Const.URL_STRING_REQ_ASIN + s, new Listener<String>() {
 					@Override
 					public void onResponse(String response) {
 						Log.d(TAG, "Response : " + response);
-
+						hideProgressDialog();
 						JsonManager manager = new JsonManager();
 						Product product = manager.getProductDetail(response);
 
@@ -201,6 +234,7 @@ public class DetailActivity extends AppCompatActivity {
 				}, new Response.ErrorListener() {
 					@Override
 					public void onErrorResponse(VolleyError error) {
+						hideProgressDialog();
 						VolleyLog.d(TAG, "Error: " + error.getMessage());
 						mTxtDescription.setText(error.getMessage());
 						mThumbnail.setVisibility(View.GONE);
