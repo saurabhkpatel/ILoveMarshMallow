@@ -26,10 +26,15 @@ Example:
 https://zappos.amazon.com/mobileapi/v1/product/asin/B00LLS8QV0
 
 ** Libraries **
-*Material Desgin Components: Android Design Support Library
+* Material Desgin Components: Android Design Support Library
                             CardView
                             RecyclerView
-*API Request and Response handling: [Android Volley](https://developer.android.com/training/volley/index.html)
-*Image Loader: LruBitmapCache
-*To Show HTML Text : [Html Textview](https://github.com/sufficientlysecure/html-textview)
+* API Request and Response handling: [Android Volley](https://developer.android.com/training/volley/index.html)
+* Image Loader: LruBitmapCache
+* To Show HTML Text : [Html Textview](https://github.com/sufficientlysecure/html-textview)
+
+
+** Screenshots **
+
+
 
