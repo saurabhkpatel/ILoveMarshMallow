@@ -43,3 +43,10 @@ https://zappos.amazon.com/mobileapi/v1/product/asin/B00LLS8QV0
 <img src=https://github.com/saurabhkpatel/ILoveMarshMallow/blob/master/screenshots/Details.png width="250"/>
 <img src=https://github.com/saurabhkpatel/ILoveMarshMallow/blob/master/screenshots/Share.png width="250"/>
 
+**Author**
+  
+    
+  The application has been tested on One Plus One device with android version 5.1.1
+  
+  Author Name :  Saurabh Patel
+                  skpatel@syr.edu
