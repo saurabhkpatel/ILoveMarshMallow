@@ -10,7 +10,7 @@ This is android application challenge.
 * After open product detail page, it can be shared via share intent to a friend who has your app running on their      phone such that they are able to view the same product.
 
 
-**API**
+###**API**
 
 1)  The following URL/endpoint/web service can be used to get back search results.
 https://zappos.amazon.com/mobileapi/v1/search?term=<?>
@@ -25,7 +25,7 @@ https://zappos.amazon.com/mobileapi/v1/product/asin/?
 Example:
 https://zappos.amazon.com/mobileapi/v1/product/asin/B00LLS8QV0
 
-**Libraries**
+###**Libraries**
 
 * Material Desgin Components: Android Design Support Library
                             CardView
@@ -35,7 +35,7 @@ https://zappos.amazon.com/mobileapi/v1/product/asin/B00LLS8QV0
 * To Show HTML Text : [Html Textview](https://github.com/sufficientlysecure/html-textview)
 
 
-**Screenshots**
+###**Screenshots**
 
 <img src=https://github.com/saurabhkpatel/ILoveMarshMallow/blob/master/screenshots/MainActivity.png width="250"/>
 <img src=https://github.com/saurabhkpatel/ILoveMarshMallow/blob/master/screenshots/SearchResults.png width="250"/>
@@ -43,7 +43,7 @@ https://zappos.amazon.com/mobileapi/v1/product/asin/B00LLS8QV0
 <img src=https://github.com/saurabhkpatel/ILoveMarshMallow/blob/master/screenshots/Details.png width="250"/>
 <img src=https://github.com/saurabhkpatel/ILoveMarshMallow/blob/master/screenshots/Share.png width="250"/>
 
-**Author**
+###**Author**
   
     
   The application has been tested on One Plus One device with android version 5.1.1
